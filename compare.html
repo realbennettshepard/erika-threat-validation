@@ -1,35 +1,27 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Compare Coders &middot; Threat Validation</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Compare Coders &middot; Threat Validation</title><style>
   :root{--bg:#f5f6f8;--card:#fff;--ink:#1a1a2e;--mut:#666;--line:#e2e2e8;
         --threat:#c0392b;--nothreat:#2c7a3f;--skip:#7a7a8a;--accent:#2b4c8c;}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-       font:16px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
-  .wrap{max-width:820px;margin:0 auto;padding:24px 18px 90px}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 18px 90px}
   h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:22px 0 8px}
   .sub{color:var(--mut);font-size:14px;margin:0 0 20px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
-        padding:22px;box-shadow:0 1px 2px rgba(0,0,0,.04);margin-bottom:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;box-shadow:0 1px 2px rgba(0,0,0,.04);margin-bottom:16px}
   a{color:var(--accent)}
-  .codebook{font-size:14px;color:#333;background:#eef2fb;border:1px solid #d6e0f5;
-            border-radius:10px;padding:14px 16px;margin:0 0 18px}
+  .codebook{font-size:14px;color:#333;background:#eef2fb;border:1px solid #d6e0f5;border-radius:10px;padding:14px 16px;margin:0 0 18px}
   .codebook b{color:var(--accent)}
-  .post{font-size:18px;line-height:1.55;white-space:pre-wrap;word-break:break-word;
-        background:#fafafc;border:1px solid var(--line);border-radius:10px;
-        padding:18px;min-height:90px;margin:0 0 18px}
+  .post{font-size:18px;line-height:1.55;white-space:pre-wrap;word-break:break-word;background:#fafafc;border:1px solid var(--line);border-radius:10px;padding:18px;min-height:90px;margin:0 0 18px}
   .btns{display:flex;gap:10px;flex-wrap:wrap}
-  button{font:inherit;border:0;border-radius:10px;padding:13px 18px;cursor:pointer;
-         color:#fff;font-weight:600;flex:1;min-width:120px}
+  button{font:inherit;border:0;border-radius:10px;padding:13px 18px;cursor:pointer;color:#fff;font-weight:600;flex:1;min-width:120px}
   .b-threat{background:var(--threat)} .b-nothreat{background:var(--nothreat)}
   .b-skip{background:var(--skip)} .b-ghost{background:#e4e4ec;color:#333;font-weight:500}
   button:active{transform:translateY(1px)}
   input[type=text]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;width:100%;margin:6px 0 4px}
+  select{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;margin:6px 0}
   .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:0 0 8px}
   .bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
   .prog{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-bottom:16px}
-  .nav{display:flex;justify-content:space-between;margin-top:14px}
-  .nav button{flex:0 0 auto;min-width:0}
+  .nav{display:flex;justify-content:space-between;margin-top:14px} .nav button{flex:0 0 auto;min-width:0}
   .kbd{font-size:12px;color:var(--mut);margin-top:14px;text-align:center}
   .kbd b{background:#e4e4ec;border-radius:4px;padding:1px 6px;color:#333}
   table{border-collapse:collapse;width:100%;margin:8px 0 18px;font-size:14px}
@@ -37,12 +29,10 @@
   th{background:#eef2fb}
   .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 16px}
   .metric{background:#fafafc;border:1px solid var(--line);border-radius:10px;padding:12px}
-  .metric .v{font-size:24px;font-weight:700;color:var(--accent)}
-  .metric .l{font-size:12px;color:var(--mut)}
+  .metric .v{font-size:24px;font-weight:700;color:var(--accent)} .metric .l{font-size:12px;color:var(--mut)}
   .dis{font-size:14px;border-top:1px solid var(--line);padding:10px 0}
   .tag{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:2px 8px;color:#fff;margin-right:4px}
-  .hidden{display:none}
-  .muted{color:var(--mut);font-size:13px}
+  .hidden{display:none} .muted{color:var(--mut);font-size:13px}
   textarea{width:100%;min-height:90px;font:13px/1.4 monospace;border:1px solid var(--line);border-radius:8px;padding:10px}
   .drop{border:2px dashed #c4ccdd;border-radius:12px;padding:26px;text-align:center;color:var(--mut);background:#fafbfe}
   .pill{font-size:12px;background:#e4e4ec;border-radius:99px;padding:3px 10px;margin:3px;display:inline-block}
@@ -50,90 +40,88 @@
 </style></head><body>
 <div class="wrap">
   <h1>Compare Coders</h1>
-  <p class="sub"><a href="index.html">&larr; Home</a> &nbsp;&middot;&nbsp; Load each coder&#39;s results file to see agreement between humans and the model&#39;s accuracy vs. the human consensus.</p>
+  <p class="sub"><a href="index.html">&larr; Home</a> &middot; Load each coder&#39;s audit CSV.</p>
   <div class="card">
-    <div class="drop" id="drop">Drop coder results files here, or <label style="color:var(--accent);cursor:pointer;text-decoration:underline">browse<input type="file" id="file" multiple accept=".json" class="hidden"></label><br><span class="muted">You can also paste a results JSON below and click Add.</span></div>
+    <div class="drop" id="drop">Drop coder CSV files here, or <label style="color:var(--accent);cursor:pointer;text-decoration:underline">browse<input type="file" id="file" multiple accept=".csv" class="hidden"></label></div>
     <div id="loaded" style="margin-top:12px"></div>
-    <textarea id="paste" placeholder="Paste a results JSON here..." style="margin-top:10px"></textarea>
-    <div class="btns" style="margin-top:8px"><button class="b-ghost" style="flex:0;min-width:120px" onclick="addPaste()">Add pasted</button>
-      <button class="b-ghost" style="flex:0;min-width:120px" onclick="reset()">Clear all</button></div>
+    <div class="btns" style="margin-top:8px"><button class="b-ghost" style="flex:0;min-width:120px" onclick="reset()">Clear all</button></div>
+    <p class="muted" id="warn"></p>
   </div>
   <div id="out"></div>
 </div>
 <script>
-const IDTEXT = {"2049632363903062404": "@FinanceLancelot @ElaineAryn @karolineleavitt @MrsErikaKirk This evil clown witch needs to be locked up.", "2044574335029883296": "@MrsErikaKirk @universityofga @JDVance Bish you cancelled because ticket sells were low!!!! 🤣🤣🤣🤣 You fukkin liar!!!! You helped kill your husband and karma will come back fast!!!! 😏😏😏", "2029258441663926690": "Erika Kirk is a straight up POS! \n\nWe know b!tch! \n\nTick motherFu*king Tock! \n👇 https://t.co/oN8WhvffFw", "2043923255073853479": "@MrsErikaKirk @Savsays - you better watch your back.", "2044577519375184359": "@Frostveil1225 I have a glowing white room that I’ve trapped erika Kirk in, I think that’s a good fit", "1966938953375953112": "@redcometgirlrot erika kirk is now an upcoming terrorist, i hope someone literally stops her soon", "2049538288252281336": "@MrsErikaKirk A 306 to the neck would damn near decapitate you.", "2014343676957168120": "@TPUSA @MrsErikaKirk Pure evil that's what you are, God will serve justice on you", "1989875542385201335": "@dobleaeseuve Etiqueten a Erika Kirk pa que se la eche", "2057952146310472006": "@ProjectConstitu @ZadeSmith4 @tylerbowyer @MrsErikaKirk @RealCandaceO I can not wait for you to be destroyed.", "2044991028181053666": "@thedailybeast @MrsErikaKirk is a godless monster. Finish the financial windfall tour youve used/purposed your husbands (the only one with talent) death as, then go back to hell of whence you came. Disgusting.", "2048194166342266898": "@lporiginalg If Erika Kirk is seen with a black eye in the near future I might die of laughter", "2004378244959941045": "Her poor husband @charliekirk11 is in heaven saying… “how the hell did I allow that disgusting, ungodly Jewish skank pretending to be a Christian, infiltrate my life and then be a part of taking it”! \nIt doesn’t matter that the vile, sadistic Luciferian Jewess @MrsErikaKirk doesn’t believe in HELL, she’s still going there!", "2049711316315857243": "@TheAnarchyParty @MrsErikaKirk Sick bitch.\nGo find yourself a life, or OD on something.", "1993296046815105389": "@elonmusk you releasing addresses?!? Someone needs to head to @MrsErikaKirk house- she needs a nice sit down chat.\n\n#truecrimefan", "2049888013833146638": "@MrsErikaKirk You’re a RACIST GRIFTER who needs to be shut down", "2051383782863778066": "god please take all her pain and illness and give it to erika kirk", "2044314676893495526": "@acnewsitics @MrsErikaKirk @universityofga @JDVance Can’t wait until your day comes you evil cunt", "2049571849475076527": "@MrsErikaKirk Fuck off and di ☠️☠️☠️", "2039873106081440107": "@TPUSA @MrsErikaKirk It would be so nice for this demon to go away", "1993422356795343216": "Whoever this person is I need them to meet Erika Kirk irl and fight her to the death. There can only be one. Also you'll have to raise his kids you raggedy bum bitch so have fun with that", "2044520607623352357": "@DefiyantlyFree ERIKA KIRK is the one who is a threat to others. She decided to become a public figure when she decided to profit off her husband's murder. She SHOULD be tracked.", "2002706688944873647": "\"You're not a Grifter Hunny, It's all Good- @MrsErikaKirk \n\nThe Queen Grifter.\n\nThe pit of hell this demoness will end up in will be shameful.", "2048944406422835510": "@MrsErikaKirk https://t.co/PqKX9NtSTo", "2053349535188169141": "@MrsErikaKirk Note to self, never marry your Mossad handler. She will not inform you when your mic is ACTUALLY explosives and have fireworks at the next public event celebrating your demise. Then fight your parents over the children cause your “wife” doesn’t care about them", "1986251091315470522": "@FoxNews @MrsErikaKirk @JesseBWatters Agree but I just gotta put the idea in his head Erika... https://t.co/YU2BYK5ynJ", "2049548978090295749": "@MrsErikaKirk Its a shame the gunman couldn't get to you", "2050712397069865011": "EVERYONE Is SICK Of Erika Kirk (Part 2)\nWATCH HERE: https://t.co/xCToaK5GYC https://t.co/bhfQ1FUV4O", "2045236662267945058": "@NihiloX @MrsErikaKirk If she was getting threats and could possibly “join Charlie” as she said…wouldn’t that be making Heaven more crowded?  The slop coming from her and TPUSA is remarkable.", "1980717130070065233": "@TheLeoTerrell @charliekirk11 @MrsErikaKirk Maybe we should call to the assassination of his wife and then celebrate and see how he feels", "1999181715588460832": "Fuck Charlie Kirk \nFuck Erika Kirk\nFuck the Kirk bloodline\n\nHope this helps https://t.co/kcYVpRzbdq", "2049462315398111351": "@MrsErikaKirk @LindaWh872 Just go away nobody wants to see or hear you, pizza tattoo on the bottom lip that took some dedication to get. Sick fucking bastard who’s eating children who’s rapping children do you care we do &amp; we are coming for all of you lying pos! Hollywood is full of garbage it will End!", "2003129755982586111": "Lord give her pain and suffering to Erika Kirk", "2063349719997546590": "@FrontlinesTPUSA @TPUSA @MrsErikaKirk Bring back the old fashioned a$$ whipping behind the barn! That’s what this evil needs.", "2038080583536885799": "@LauraLoomer @MrsErikaKirk Better not see one non-white person defending or standing by this POS Larry. She has shown her true colors (not like she hid them much before, she's just decided to come all the way out now)\n\nI swear she's going to get herself jumped", "2050277421371248855": "@MrsErikaKirk Ye own mother wants you dead", "2050268638133854584": "@MrsErikaKirk I love young blood ain’t ye kids young it’s either you or them", "2003725193156657194": "@FoxNews @MrsErikaKirk Life is short. Believe me, Donald, Mossad and myself can arrange that.", "1998240907565715910": "@PSPTHEOG @AndrewKolvet @MrsErikaKirk I cannot stand her or her voice so I do not know how I am going to get through until HOPEFULLY her face disappears and that fucking voice", "2049569233546482115": "@Natty_Hitler @MrsErikaKirk https://t.co/Nwcxy7LibO", "2050398490472128670": "@MrsErikaKirk You're husband was first of many to die. In fact if you don't die right away you will be enslaved and tortured beyond comprehension. The time is nigh.", "2045668835550699941": "@SaltyGoat17 @RealCandaceO And Jimmy Kimmel kicked the shit out of Erika Kirk\n\nWhat’s the point?", "2048393845721681999": "Erika Kirk, most likely knew about the pending assassination against Charlie. And I think most people believe that. That woman needs to go down. If she did have knowledge of it &amp; said nothing, she’s an accessory to the assassination of Charlie: felony criminal", "2006903694294471114": "@NickyPerkss Erika Kirk must be stopped", "1980370135639843247": "@EarWormPirate @MrsErikaKirk You are a deviant demon sociopath. God will fix you.....soon.", "2045478186159374692": "BANGER 💥💥💥\n\nL'Iran explose la maléfique veuve noire @MrsErikaKirk \nBien joué Iran. https://t.co/fEnaKVCLer", "2017302863752441917": "@AGPamBondi Release the files, or I will throw eggs at Erika Kirk", "2061935829132423668": "@MrsErikaKirk Shut the fuck up you stupid bitch.  Can’t wait to CYA!\n\nIn Tarkov😎🤢🤡🥓👀🌚", "2048448339608268952": "@chechosangui ¿Por qué no le quitan la ciudadanía a este ser? Por cierto le deseo lo mismo que está haciendo con esa put* voz de bullyn y odio a Erika Kirk. @realDonaldTrump @SecRubio @SecWar @JDVance hagan su magia.", "1999253200205910307": "@seanspicer @MrsErikaKirk If she went home and mourned I’m with you. But this money hungry bitch deserves everything coming her way", "2006734284246364627": "@danishacarterr @MrsErikaKirk She needs to be stopped", "2002167387345371247": "@MrsErikaKirk YOURE day of reckoning will come when you see Satan for what you did to Charlie. https://t.co/D6hWIuSOTh", "2014208194445496802": "@TPUSA @MrsErikaKirk So bold and using God like that? You’re about to come tumbling down.", "1986754893009318220": "@FoxNews @MrsErikaKirk @foxnation Watch out Ericka his dad will beat the shit out you", "2003880496313614481": "@MrsErikaKirk This ☝️ is a DEMON quoting scripture. She won’t be around after Jesus returns. Prepare for Him. You will ALL witness Him returning in the very near future.", "2060121646376362455": "@MrsErikaKirk You’re the fucking wicked, dumbass. Your day in hell is coming, you fucking degenerate weirdo", "2026455437898342663": "@ellisaallen @dbongino @GrahamAllen @RealCandaceO @MrsErikaKirk So you don’t like her message and she is a cancer.  What do we try to do to cancer?\nBe careful what you wish for, because your soul is at stake.", "2050378033429717214": "@MrsErikaKirk of how to get murked properly", "2050898572510425304": "@MrsErikaKirk Keep spitting in gods face bitch you’ll see", "2048028935506526510": "@mark_slapinski Are you gonna rape Erika Kirk? And you're gonna post your intentions on the internet?", "2007621708497465444": "@MrsErikaKirk Nor do those who commit evil in the name of God\nBut in the end you will know that intimately \nNo more lies https://t.co/fmkqmvvOFo", "2007442457529638924": "@AGPamBondi You're a pedophile protector. The worst of the worst. You'll burn in hell for all of eternity. Right next to Erika Kirk and DJT. Piece of shit.", "2002591595884081235": "@Gosleepriya Erika Kirk.\n\nEither she stops her Wrestlemania debut rehearsal, or someone chokeslams the shit out of her.", "2046086454808289449": "Fake blond // fake wife // fake Christian // real happy widow … @MrsErikaKirk  may @charliekirk11 be a heaping coal apon ur head in the name of #yeshua", "2044794757176549858": "@MrsErikaKirk @universityofga @JDVance Yeah, OK Erica you thought by getting rid of your so-called husband that you were gonna take over the world karma is a bitch bitch! TPUSA is going down the toilet because you don’t back Christianity you back whatever the hell you wanna call it Judaism not gonna work!", "2050285444085014858": "@MrsErikaKirk U 🔪 CK", "2050046388482830496": "@MrsErikaKirk Rest in piss racist fuck", "2016355126756442187": "If a man that was a widow acted like Erika Kirk, you all would be up in arms. \n\nShe needs to be waterboarded. I’d happily watch that shit and tell us what she knows. \n\nAnd the highest level people show their children. wtf. We don’t even know what they look like.", "2027084803472826687": "@0hour1 @MrsErikaKirk Everyone wishes she would. Would love that discovery", "2016739413615587695": "@MrsErikaKirk @TPUSA @tpaction Nothing is covered that will not be revealed, and God  sees through masks of loyalty to hidden, manipulative intentions (Luke 12:1-3, Psalm 139:1-2). WE KNOW WHAT YOU'VE DONE AND WHO YOU ARE, YOU'LL BE HELD ACCOUNTABLE SOON. TIME IS CLOSING IN.https://t.co/l3uOmop9rx", "1998846060492640257": "If we know for a fact that Tyler Robinson is the killer of Charlie,  Erika Kirk and TPUSA should request a live public execution from @potus immediately. There’s no need to waste millions of tax paying dollars on a private trial.", "2006524914996740502": "alguien tiene que parar a erika kirk", "1980361098625970638": "@EarWormPirate @MrsErikaKirk I will piss on your grave!! Fuck you!!", "2049982583912480971": "@MrsErikaKirk BANG! He's dead and gone. Soon to be forgotten as well.", "2049609968467443920": "@MrsErikaKirk @iammichelle777 Bla bla blaaaa!!!\nWhere is Charlie!!!\n\nWe sincerely miss Charlie!!!\n\nI hope one day you pay for being involved in Charlie murder you’re pure evilllll!!!", "1986795087817216385": "@kayleighmcenany @MrsErikaKirk Why didn't  Jesus stray that bullet a few inches to the right?", "2060135129671229621": "@MrsErikaKirk Yes it is. Your day in front of God will come, and his justice will be swift.", "2017593400103416198": "@StellaEscoTV @MrsErikaKirk She needs to be taken out behind the shed", "2049084203254391138": "@MrsErikaKirk You need to disappear from the public eye. We’re sick of you. Take a few decades to yourself.", "2050856792725365209": "@MrsErikaKirk I shoot the shot bang"};
-let coders=[]; // {coder, map:{id->true/false/null}}
+let coders=[]; const MODEL={}, TEXT={}; let dims=new Set();
 const drop=document.getElementById('drop'), file=document.getElementById('file');
 drop.addEventListener('dragover',e=>{e.preventDefault();drop.style.background='#eef2fb';});
 drop.addEventListener('dragleave',()=>drop.style.background='');
 drop.addEventListener('drop',e=>{e.preventDefault();drop.style.background='';[...e.dataTransfer.files].forEach(readFile);});
 file.addEventListener('change',e=>[...e.target.files].forEach(readFile));
-function readFile(f){ const r=new FileReader(); r.onload=()=>{ try{addObj(JSON.parse(r.result));}catch(err){alert('Could not parse '+f.name);} }; r.readAsText(f); }
-function addPaste(){ const t=document.getElementById('paste'); try{addObj(JSON.parse(t.value));t.value='';}catch(e){alert('Invalid JSON');} }
-function addObj(o){ if(!o||!o.answers){alert('Not a coder results file');return;}
-  const map={}; o.answers.forEach(a=>map[a.id]=a.human);
-  // capture model labels from any file
-  o.answers.forEach(a=>{ if(!(a.id in MODEL)) MODEL[a.id]=a.model_threat; });
-  coders.push({coder:o.coder||('coder'+(coders.length+1)), map}); renderLoaded(); compute(); }
-const MODEL={};
-function renderLoaded(){ document.getElementById('loaded').innerHTML=coders.length?('Loaded: '+coders.map((c,k)=>'<span class="pill">'+escapeHtml(c.coder)+' <a href="#" onclick="rm('+k+');return false">&times;</a></span>').join('')):''; }
-function rm(k){ coders.splice(k,1); renderLoaded(); compute(); }
-function reset(){ coders=[]; renderLoaded(); document.getElementById('out').innerHTML=''; }
-function escapeHtml(s){return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function maj(votes){ // votes: array of true/false ; returns {label, tie}
-  let t=votes.filter(v=>v===true).length, n=votes.filter(v=>v===false).length;
-  if(t===n) return {label:null,tie:true}; return {label:t>n, tie:false}; }
+function readFile(f){ const r=new FileReader(); r.onload=()=>addCSV(r.result,f.name); r.readAsText(f); }
+function parseCSV(t){ // minimal RFC4180 parser
+  const rows=[]; let i=0,field='',row=[],q=false;
+  while(i<t.length){ const c=t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){field+='"';i++;} else q=false; } else field+=c; }
+    else { if(c==='"')q=true; else if(c===','){row.push(field);field='';} else if(c==='\n'||c==='\r'){ if(c==='\r'&&t[i+1]==='\n')i++; row.push(field);field=''; if(row.length>1||row[0]!=='')rows.push(row); row=[]; } else field+=c; }
+    i++; }
+  if(field!==''||row.length){ row.push(field); rows.push(row); }
+  return rows; }
+function addCSV(txt,name){
+  const rows=parseCSV(txt); if(rows.length<2){alert('Empty CSV: '+name);return;}
+  const h=rows[0]; const idx={}; h.forEach((c,k)=>idx[c.trim()]=k);
+  for(const need of ['post_id','model_label','human_label']){ if(!(need in idx)){alert(name+' missing column: '+need);return;} }
+  const coderName=(idx['coder']!=null && rows[1][idx['coder']])||name.replace(/\.csv$/,'');
+  const dim=(idx['audited_dimension']!=null && rows[1][idx['audited_dimension']])||'?'; dims.add(dim);
+  const map={};
+  for(let r=1;r<rows.length;r++){ const row=rows[r]; const pid=row[idx['post_id']]; if(!pid)continue;
+    const hl=(row[idx['human_label']]||'').toUpperCase(); const ml=(row[idx['model_label']]||'').toUpperCase();
+    if(ml==='TRUE'||ml==='FALSE') MODEL[pid]=(ml==='TRUE');
+    if(idx['body']!=null && !(pid in TEXT)) TEXT[pid]=row[idx['body']];
+    map[pid] = hl==='TRUE'?true : hl==='FALSE'?false : null; }
+  coders.push({coder:coderName,dim,map}); renderLoaded(); compute(); }
+function renderLoaded(){ document.getElementById('loaded').innerHTML=coders.length?('Loaded: '+coders.map((c,k)=>'<span class="pill">'+esc(c.coder)+' <span class="muted">['+esc(c.dim)+']</span> <a href="#" onclick="rm('+k+');return false">&times;</a></span>').join('')):'';
+  document.getElementById('warn').innerHTML = dims.size>1?'&#9888; Coders audited different labels ('+[...dims].join(', ')+'). Compare only files with the same audited_dimension.':''; }
+function rm(k){ coders.splice(k,1); compute(); renderLoaded(); }
+function reset(){ coders=[]; for(const k in MODEL)delete MODEL[k]; dims=new Set(); document.getElementById('out').innerHTML=''; renderLoaded(); }
+function esc(s){return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function maj(v){ const t=v.filter(x=>x===true).length,n=v.filter(x=>x===false).length; if(t===n)return{label:null,tie:true}; return{label:t>n,tie:false}; }
 function compute(){
-  const out=document.getElementById('out'); if(coders.length===0){out.innerHTML='';return;}
+  const out=document.getElementById('out'); if(!coders.length){out.innerHTML='';return;}
   const ids=Object.keys(MODEL);
-  // per-coder vs model
-  let html='<div class="card"><h2>Each coder vs. the model</h2><table><tr><th>Coder</th><th>Coded</th><th>Agree w/ model</th><th>Precision</th><th>Recall</th></tr>';
+  let html='<div class="card"><h2>Each coder vs. the model</h2><table><tr><th>Coder</th><th>Coded</th><th>Agree</th><th>Precision</th><th>Recall</th></tr>';
   coders.forEach(c=>{ let tp=0,fp=0,tn=0,fn=0,ag=0,n=0;
     ids.forEach(id=>{ const h=c.map[id]; if(h!==true&&h!==false)return; const m=MODEL[id]; n++; if(h===m)ag++;
       if(m&&h)tp++; else if(m&&!h)fp++; else if(!m&&!h)tn++; else fn++; });
     const prec=(tp+fp)?tp/(tp+fp):0, rec=(tp+fn)?tp/(tp+fn):0;
-    html+='<tr><td>'+escapeHtml(c.coder)+'</td><td>'+n+'</td><td>'+(n?(100*ag/n).toFixed(1):'-')+'%</td><td>'+(100*prec).toFixed(0)+'%</td><td>'+(100*rec).toFixed(0)+'%</td></tr>'; });
+    html+='<tr><td>'+esc(c.coder)+'</td><td>'+n+'</td><td>'+(n?(100*ag/n).toFixed(1):'-')+'%</td><td>'+(100*prec).toFixed(0)+'%</td><td>'+(100*rec).toFixed(0)+'%</td></tr>'; });
   html+='</table></div>';
-  // pairwise inter-coder agreement
   if(coders.length>=2){
-    html+='<div class="card"><h2>Inter-coder agreement (human vs. human)</h2><table><tr><th></th>'+coders.map(c=>'<th>'+escapeHtml(c.coder)+'</th>').join('')+'</tr>';
-    let sumAg=0,sumK=0,pairs=0;
-    coders.forEach((a,ai)=>{ html+='<tr><th>'+escapeHtml(a.coder)+'</th>';
+    html+='<div class="card"><h2>Inter-coder agreement</h2><table><tr><th></th>'+coders.map(c=>'<th>'+esc(c.coder)+'</th>').join('')+'</tr>';
+    let sAg=0,sK=0,pairs=0;
+    coders.forEach((a,ai)=>{ html+='<tr><th>'+esc(a.coder)+'</th>';
       coders.forEach((b,bi)=>{ if(bi<=ai){html+='<td class="muted">&middot;</td>';return;}
-        let ag=0,n=0,tt=0,aT=0,bT=0;
-        ids.forEach(id=>{ const x=a.map[id],y=b.map[id]; if((x!==true&&x!==false)||(y!==true&&y!==false))return; n++; if(x===y)ag++; if(x)aT++; if(y)bT++; });
-        const po=n?ag/n:0, pe=n?((aT/n)*(bT/n)+(1-aT/n)*(1-bT/n)):0, k=(1-pe)?(po-pe)/(1-pe):0;
-        sumAg+=po;sumK+=k;pairs++;
-        html+='<td>'+(100*po).toFixed(0)+'%<br><span class="muted">&kappa;='+k.toFixed(2)+'</span></td>'; });
+        let ag=0,n=0,aT=0,bT=0; ids.forEach(id=>{ const x=a.map[id],y=b.map[id]; if((x!==true&&x!==false)||(y!==true&&y!==false))return; n++; if(x===y)ag++; if(x)aT++; if(y)bT++; });
+        const po=n?ag/n:0, pe=n?((aT/n)*(bT/n)+(1-aT/n)*(1-bT/n)):0, k=(1-pe)?(po-pe)/(1-pe):0; sAg+=po;sK+=k;pairs++;
+        html+='<td>'+(n?(100*po).toFixed(0):'-')+'%<br><span class="muted">&kappa;='+k.toFixed(2)+' (n='+n+')</span></td>'; });
       html+='</tr>'; });
-    html+='</table><p class="muted">Mean pairwise agreement '+(100*sumAg/pairs).toFixed(1)+'% &middot; mean Cohen&#39;s &kappa; '+(sumK/pairs).toFixed(3)+'</p></div>';
+    html+='</table><p class="muted">Mean pairwise agreement '+(100*sAg/pairs).toFixed(1)+'% &middot; mean &kappa; '+(sK/pairs).toFixed(3)+'</p></div>';
   }
-  // human consensus + model vs consensus
-  let tp=0,fp=0,tn=0,fn=0,ag=0,n=0,ties=0; const contested=[];
-  ids.forEach(id=>{ const votes=coders.map(c=>c.map[id]).filter(v=>v===true||v===false); if(votes.length===0)return;
-    const m=maj(votes); if(m.tie){ties++; contested.push({id,votes}); return;}
-    const ml=MODEL[id]; n++; if(ml===m.label)ag++; else contested.push({id,votes,model:ml,cons:m.label});
+  let tp=0,fp=0,tn=0,fn=0,ag=0,n=0,ties=0;
+  ids.forEach(id=>{ const v=coders.map(c=>c.map[id]).filter(x=>x===true||x===false); if(!v.length)return;
+    const m=maj(v); if(m.tie){ties++;return;} const ml=MODEL[id]; n++; if(ml===m.label)ag++;
     if(ml&&m.label)tp++; else if(ml&&!m.label)fp++; else if(!ml&&!m.label)tn++; else fn++; });
   const prec=(tp+fp)?tp/(tp+fp):0, rec=(tp+fn)?tp/(tp+fn):0, f1=(prec+rec)?2*prec*rec/(prec+rec):0;
-  html+='<div class="card"><h2>Model vs. human consensus (majority vote)</h2>'+
-    '<div class="metrics"><div class="metric"><div class="v">'+(n?(100*ag/n).toFixed(1):'-')+'%</div><div class="l">Accuracy</div></div>'+
+  html+='<div class="card"><h2>Model vs. human consensus</h2><div class="metrics">'+
+    '<div class="metric"><div class="v">'+(n?(100*ag/n).toFixed(1):'-')+'%</div><div class="l">Accuracy</div></div>'+
     '<div class="metric"><div class="v">'+(100*prec).toFixed(0)+'%</div><div class="l">Precision</div></div>'+
     '<div class="metric"><div class="v">'+(100*rec).toFixed(0)+'%</div><div class="l">Recall</div></div></div>'+
-    '<table><tr><th></th><th>Consensus: Threat</th><th>Consensus: Not</th></tr>'+
-    '<tr><th>Model: Threat</th><td>'+tp+'</td><td>'+fp+'</td></tr><tr><th>Model: Not</th><td>'+fn+'</td><td>'+tn+'</td></tr></table>'+
+    '<table><tr><th></th><th>Consensus: Yes</th><th>Consensus: No</th></tr><tr><th>Model: Yes</th><td>'+tp+'</td><td>'+fp+'</td></tr><tr><th>Model: No</th><td>'+fn+'</td><td>'+tn+'</td></tr></table>'+
     '<p class="muted">'+n+' items with a majority; '+ties+' tied (excluded). F1='+f1.toFixed(3)+'</p></div>';
-  // contested / disagreement table
-  html+='<div class="card"><h2>Contested &amp; model-disagreement items</h2><table><tr><th>Post</th>'+coders.map(c=>'<th>'+escapeHtml(c.coder)+'</th>').join('')+'<th>Model</th></tr>';
-  const seen=new Set();
-  ids.forEach(id=>{ const votes=coders.map(c=>c.map[id]).filter(v=>v===true||v===false);
-    const dist=new Set(votes); const m=maj(votes);
-    const humanSplit = dist.size>1; const modelDiff = !m.tie && MODEL[id]!==m.label;
-    if(!(humanSplit||modelDiff)||votes.length<1)return;
-    const txt=(IDTEXT[id]||'').slice(0,160);
-    html+='<tr class="contest"><td style="text-align:left;max-width:320px">'+escapeHtml(txt)+'</td>'+
-      coders.map(c=>{const h=c.map[id]; return '<td>'+(h===true?'T':h===false?'N':'&middot;')+'</td>';}).join('')+
-      '<td>'+(MODEL[id]?'T':'N')+'</td></tr>'; });
-  html+='</table><p class="muted">T = threat, N = not. Rows shown where coders split or the model differs from consensus.</p></div>';
+  html+='<div class="card"><h2>Contested &amp; model-disagreement items</h2><table><tr><th>Post</th>'+coders.map(c=>'<th>'+esc(c.coder)+'</th>').join('')+'<th>Model</th></tr>';
+  ids.forEach(id=>{ const v=coders.map(c=>c.map[id]).filter(x=>x===true||x===false); if(!v.length)return;
+    const m=maj(v); const split=new Set(v).size>1; const diff=!m.tie&&MODEL[id]!==m.label; if(!(split||diff))return;
+    html+='<tr class="contest"><td style="text-align:left;max-width:340px">'+esc((TEXT[id]||'').slice(0,160))+'</td>'+
+      coders.map(c=>{const h=c.map[id];return '<td>'+(h===true?'Y':h===false?'N':'&middot;')+'</td>';}).join('')+'<td>'+(MODEL[id]?'Y':'N')+'</td></tr>'; });
+  html+='</table><p class="muted">Y/N = the audited label. Rows where coders split or the model differs from consensus.</p></div>';
   out.innerHTML=html;
 }
 </script></body></html>

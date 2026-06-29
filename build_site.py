@@ -1,4 +1,9 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Audit the Examples &middot; Threat Validation</title><style>
+#!/usr/bin/env python3
+"""Regenerates the static validation site (index/code/compare). Data lives in examples.json,
+fetched at runtime, so the HTML stays small. Run from the site directory."""
+import os
+
+CSS = '''
   :root{--bg:#f5f6f8;--card:#fff;--ink:#1a1a2e;--mut:#666;--line:#e2e2e8;
         --threat:#c0392b;--nothreat:#2c7a3f;--skip:#7a7a8a;--accent:#2b4c8c;}
   *{box-sizing:border-box}
@@ -37,7 +42,29 @@
   .drop{border:2px dashed #c4ccdd;border-radius:12px;padding:26px;text-align:center;color:var(--mut);background:#fafbfe}
   .pill{font-size:12px;background:#e4e4ec;border-radius:99px;padding:3px 10px;margin:3px;display:inline-block}
   .contest{background:#fff6e6}
-</style></head><body>
+'''
+
+def page(title, body):
+    return ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            f'<title>{title}</title><style>{CSS}</style></head><body>{body}</body></html>')
+
+# ---------------- index ----------------
+index = page("Threat Classification Validation", '''
+<div class="wrap">
+  <h1>Threat Classification Validation</h1>
+  <p class="sub">A blind human audit of how accurately the model flags violent / eliminationist and threatening posts toward Erika Kirk, and how much human coders agree with each other.</p>
+  <div class="card"><h2>1. Audit the examples</h2>
+    <p class="muted">Read posts and judge each yourself, without seeing the model&#39;s label. All 4,224 examples are loaded; you can stop whenever you like and download your work as a CSV.</p>
+    <div class="btns"><button class="b-threat" style="flex:0;min-width:200px" onclick="location.href='code.html'">Start auditing &rarr;</button></div></div>
+  <div class="card"><h2>2. Compare coders</h2>
+    <p class="muted">Load two or more coders&#39; CSVs to see inter-coder agreement, a human consensus, and the model&#39;s accuracy against that consensus.</p>
+    <div class="btns"><button class="b-ghost" style="flex:0;min-width:200px" onclick="location.href='compare.html'">Open comparison &rarr;</button></div></div>
+  <p class="muted">All processing happens in your browser. Nothing is uploaded.</p>
+</div>''')
+
+# ---------------- code ----------------
+code = page("Audit the Examples &middot; Threat Validation", '''
 <div class="wrap">
   <h1>Audit the Examples</h1>
   <p class="sub"><a href="index.html">&larr; Home</a> &middot; Blind coding vs. the model&#39;s label.</p>
@@ -152,8 +179,103 @@ function downloadCSV(){
     lines.push([csvCell(d.post_id),csvCell(d.text),d.m_hostile?'TRUE':'FALSE',d.m_threat?'TRUE':'FALSE',
       d.m_violence?'TRUE':'FALSE',d.m_elim?'TRUE':'FALSE',d.m_candace?'TRUE':'FALSE',
       DEFS[DIM].col, m?'TRUE':'FALSE', hl, ag, csvCell(coder)].join(',')); });
-  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const blob=new Blob([lines.join('\\n')],{type:'text/csv'});
   const safe=coder.replace(/[^a-z0-9_-]/gi,'_');
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='erika_audit_'+DEFS[DIM].col+'_'+safe+'.csv'; a.click();
 }
-</script></body></html>
+</script>''')
+
+# ---------------- compare ----------------
+compare = page("Compare Coders &middot; Threat Validation", '''
+<div class="wrap">
+  <h1>Compare Coders</h1>
+  <p class="sub"><a href="index.html">&larr; Home</a> &middot; Load each coder&#39;s audit CSV.</p>
+  <div class="card">
+    <div class="drop" id="drop">Drop coder CSV files here, or <label style="color:var(--accent);cursor:pointer;text-decoration:underline">browse<input type="file" id="file" multiple accept=".csv" class="hidden"></label></div>
+    <div id="loaded" style="margin-top:12px"></div>
+    <div class="btns" style="margin-top:8px"><button class="b-ghost" style="flex:0;min-width:120px" onclick="reset()">Clear all</button></div>
+    <p class="muted" id="warn"></p>
+  </div>
+  <div id="out"></div>
+</div>
+<script>
+let coders=[]; const MODEL={}, TEXT={}; let dims=new Set();
+const drop=document.getElementById('drop'), file=document.getElementById('file');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.style.background='#eef2fb';});
+drop.addEventListener('dragleave',()=>drop.style.background='');
+drop.addEventListener('drop',e=>{e.preventDefault();drop.style.background='';[...e.dataTransfer.files].forEach(readFile);});
+file.addEventListener('change',e=>[...e.target.files].forEach(readFile));
+function readFile(f){ const r=new FileReader(); r.onload=()=>addCSV(r.result,f.name); r.readAsText(f); }
+function parseCSV(t){ // minimal RFC4180 parser
+  const rows=[]; let i=0,field='',row=[],q=false;
+  while(i<t.length){ const c=t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){field+='"';i++;} else q=false; } else field+=c; }
+    else { if(c==='"')q=true; else if(c===','){row.push(field);field='';} else if(c==='\\n'||c==='\\r'){ if(c==='\\r'&&t[i+1]==='\\n')i++; row.push(field);field=''; if(row.length>1||row[0]!=='')rows.push(row); row=[]; } else field+=c; }
+    i++; }
+  if(field!==''||row.length){ row.push(field); rows.push(row); }
+  return rows; }
+function addCSV(txt,name){
+  const rows=parseCSV(txt); if(rows.length<2){alert('Empty CSV: '+name);return;}
+  const h=rows[0]; const idx={}; h.forEach((c,k)=>idx[c.trim()]=k);
+  for(const need of ['post_id','model_label','human_label']){ if(!(need in idx)){alert(name+' missing column: '+need);return;} }
+  const coderName=(idx['coder']!=null && rows[1][idx['coder']])||name.replace(/\\.csv$/,'');
+  const dim=(idx['audited_dimension']!=null && rows[1][idx['audited_dimension']])||'?'; dims.add(dim);
+  const map={};
+  for(let r=1;r<rows.length;r++){ const row=rows[r]; const pid=row[idx['post_id']]; if(!pid)continue;
+    const hl=(row[idx['human_label']]||'').toUpperCase(); const ml=(row[idx['model_label']]||'').toUpperCase();
+    if(ml==='TRUE'||ml==='FALSE') MODEL[pid]=(ml==='TRUE');
+    if(idx['body']!=null && !(pid in TEXT)) TEXT[pid]=row[idx['body']];
+    map[pid] = hl==='TRUE'?true : hl==='FALSE'?false : null; }
+  coders.push({coder:coderName,dim,map}); renderLoaded(); compute(); }
+function renderLoaded(){ document.getElementById('loaded').innerHTML=coders.length?('Loaded: '+coders.map((c,k)=>'<span class="pill">'+esc(c.coder)+' <span class="muted">['+esc(c.dim)+']</span> <a href="#" onclick="rm('+k+');return false">&times;</a></span>').join('')):'';
+  document.getElementById('warn').innerHTML = dims.size>1?'&#9888; Coders audited different labels ('+[...dims].join(', ')+'). Compare only files with the same audited_dimension.':''; }
+function rm(k){ coders.splice(k,1); compute(); renderLoaded(); }
+function reset(){ coders=[]; for(const k in MODEL)delete MODEL[k]; dims=new Set(); document.getElementById('out').innerHTML=''; renderLoaded(); }
+function esc(s){return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function maj(v){ const t=v.filter(x=>x===true).length,n=v.filter(x=>x===false).length; if(t===n)return{label:null,tie:true}; return{label:t>n,tie:false}; }
+function compute(){
+  const out=document.getElementById('out'); if(!coders.length){out.innerHTML='';return;}
+  const ids=Object.keys(MODEL);
+  let html='<div class="card"><h2>Each coder vs. the model</h2><table><tr><th>Coder</th><th>Coded</th><th>Agree</th><th>Precision</th><th>Recall</th></tr>';
+  coders.forEach(c=>{ let tp=0,fp=0,tn=0,fn=0,ag=0,n=0;
+    ids.forEach(id=>{ const h=c.map[id]; if(h!==true&&h!==false)return; const m=MODEL[id]; n++; if(h===m)ag++;
+      if(m&&h)tp++; else if(m&&!h)fp++; else if(!m&&!h)tn++; else fn++; });
+    const prec=(tp+fp)?tp/(tp+fp):0, rec=(tp+fn)?tp/(tp+fn):0;
+    html+='<tr><td>'+esc(c.coder)+'</td><td>'+n+'</td><td>'+(n?(100*ag/n).toFixed(1):'-')+'%</td><td>'+(100*prec).toFixed(0)+'%</td><td>'+(100*rec).toFixed(0)+'%</td></tr>'; });
+  html+='</table></div>';
+  if(coders.length>=2){
+    html+='<div class="card"><h2>Inter-coder agreement</h2><table><tr><th></th>'+coders.map(c=>'<th>'+esc(c.coder)+'</th>').join('')+'</tr>';
+    let sAg=0,sK=0,pairs=0;
+    coders.forEach((a,ai)=>{ html+='<tr><th>'+esc(a.coder)+'</th>';
+      coders.forEach((b,bi)=>{ if(bi<=ai){html+='<td class="muted">&middot;</td>';return;}
+        let ag=0,n=0,aT=0,bT=0; ids.forEach(id=>{ const x=a.map[id],y=b.map[id]; if((x!==true&&x!==false)||(y!==true&&y!==false))return; n++; if(x===y)ag++; if(x)aT++; if(y)bT++; });
+        const po=n?ag/n:0, pe=n?((aT/n)*(bT/n)+(1-aT/n)*(1-bT/n)):0, k=(1-pe)?(po-pe)/(1-pe):0; sAg+=po;sK+=k;pairs++;
+        html+='<td>'+(n?(100*po).toFixed(0):'-')+'%<br><span class="muted">&kappa;='+k.toFixed(2)+' (n='+n+')</span></td>'; });
+      html+='</tr>'; });
+    html+='</table><p class="muted">Mean pairwise agreement '+(100*sAg/pairs).toFixed(1)+'% &middot; mean &kappa; '+(sK/pairs).toFixed(3)+'</p></div>';
+  }
+  let tp=0,fp=0,tn=0,fn=0,ag=0,n=0,ties=0;
+  ids.forEach(id=>{ const v=coders.map(c=>c.map[id]).filter(x=>x===true||x===false); if(!v.length)return;
+    const m=maj(v); if(m.tie){ties++;return;} const ml=MODEL[id]; n++; if(ml===m.label)ag++;
+    if(ml&&m.label)tp++; else if(ml&&!m.label)fp++; else if(!ml&&!m.label)tn++; else fn++; });
+  const prec=(tp+fp)?tp/(tp+fp):0, rec=(tp+fn)?tp/(tp+fn):0, f1=(prec+rec)?2*prec*rec/(prec+rec):0;
+  html+='<div class="card"><h2>Model vs. human consensus</h2><div class="metrics">'+
+    '<div class="metric"><div class="v">'+(n?(100*ag/n).toFixed(1):'-')+'%</div><div class="l">Accuracy</div></div>'+
+    '<div class="metric"><div class="v">'+(100*prec).toFixed(0)+'%</div><div class="l">Precision</div></div>'+
+    '<div class="metric"><div class="v">'+(100*rec).toFixed(0)+'%</div><div class="l">Recall</div></div></div>'+
+    '<table><tr><th></th><th>Consensus: Yes</th><th>Consensus: No</th></tr><tr><th>Model: Yes</th><td>'+tp+'</td><td>'+fp+'</td></tr><tr><th>Model: No</th><td>'+fn+'</td><td>'+tn+'</td></tr></table>'+
+    '<p class="muted">'+n+' items with a majority; '+ties+' tied (excluded). F1='+f1.toFixed(3)+'</p></div>';
+  html+='<div class="card"><h2>Contested &amp; model-disagreement items</h2><table><tr><th>Post</th>'+coders.map(c=>'<th>'+esc(c.coder)+'</th>').join('')+'<th>Model</th></tr>';
+  ids.forEach(id=>{ const v=coders.map(c=>c.map[id]).filter(x=>x===true||x===false); if(!v.length)return;
+    const m=maj(v); const split=new Set(v).size>1; const diff=!m.tie&&MODEL[id]!==m.label; if(!(split||diff))return;
+    html+='<tr class="contest"><td style="text-align:left;max-width:340px">'+esc((TEXT[id]||'').slice(0,160))+'</td>'+
+      coders.map(c=>{const h=c.map[id];return '<td>'+(h===true?'Y':h===false?'N':'&middot;')+'</td>';}).join('')+'<td>'+(MODEL[id]?'Y':'N')+'</td></tr>'; });
+  html+='</table><p class="muted">Y/N = the audited label. Rows where coders split or the model differs from consensus.</p></div>';
+  out.innerHTML=html;
+}
+</script>''')
+
+open('index.html','w').write(index)
+open('code.html','w').write(code)
+open('compare.html','w').write(compare)
+print('wrote index.html, code.html, compare.html')
