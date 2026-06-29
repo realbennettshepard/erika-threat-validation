@@ -1,0 +1,155 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code the Sample &middot; Threat Validation</title><style>
+  :root{--bg:#f5f6f8;--card:#fff;--ink:#1a1a2e;--mut:#666;--line:#e2e2e8;
+        --threat:#c0392b;--nothreat:#2c7a3f;--skip:#7a7a8a;--accent:#2b4c8c;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:820px;margin:0 auto;padding:24px 18px 90px}
+  h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:22px 0 8px}
+  .sub{color:var(--mut);font-size:14px;margin:0 0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:22px;box-shadow:0 1px 2px rgba(0,0,0,.04);margin-bottom:16px}
+  a{color:var(--accent)}
+  .codebook{font-size:14px;color:#333;background:#eef2fb;border:1px solid #d6e0f5;
+            border-radius:10px;padding:14px 16px;margin:0 0 18px}
+  .codebook b{color:var(--accent)}
+  .post{font-size:18px;line-height:1.55;white-space:pre-wrap;word-break:break-word;
+        background:#fafafc;border:1px solid var(--line);border-radius:10px;
+        padding:18px;min-height:90px;margin:0 0 18px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  button{font:inherit;border:0;border-radius:10px;padding:13px 18px;cursor:pointer;
+         color:#fff;font-weight:600;flex:1;min-width:120px}
+  .b-threat{background:var(--threat)} .b-nothreat{background:var(--nothreat)}
+  .b-skip{background:var(--skip)} .b-ghost{background:#e4e4ec;color:#333;font-weight:500}
+  button:active{transform:translateY(1px)}
+  input[type=text]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;width:100%;margin:6px 0 4px}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:0 0 8px}
+  .bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+  .prog{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-bottom:16px}
+  .nav{display:flex;justify-content:space-between;margin-top:14px}
+  .nav button{flex:0 0 auto;min-width:0}
+  .kbd{font-size:12px;color:var(--mut);margin-top:14px;text-align:center}
+  .kbd b{background:#e4e4ec;border-radius:4px;padding:1px 6px;color:#333}
+  table{border-collapse:collapse;width:100%;margin:8px 0 18px;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+  th{background:#eef2fb}
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 16px}
+  .metric{background:#fafafc;border:1px solid var(--line);border-radius:10px;padding:12px}
+  .metric .v{font-size:24px;font-weight:700;color:var(--accent)}
+  .metric .l{font-size:12px;color:var(--mut)}
+  .dis{font-size:14px;border-top:1px solid var(--line);padding:10px 0}
+  .tag{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:2px 8px;color:#fff;margin-right:4px}
+  .hidden{display:none}
+  .muted{color:var(--mut);font-size:13px}
+  textarea{width:100%;min-height:90px;font:13px/1.4 monospace;border:1px solid var(--line);border-radius:8px;padding:10px}
+  .drop{border:2px dashed #c4ccdd;border-radius:12px;padding:26px;text-align:center;color:var(--mut);background:#fafbfe}
+  .pill{font-size:12px;background:#e4e4ec;border-radius:99px;padding:3px 10px;margin:3px;display:inline-block}
+  .contest{background:#fff6e6}
+</style></head><body>
+<div class="wrap">
+  <h1>Code the Sample</h1>
+  <p class="sub"><a href="index.html">&larr; Home</a> &nbsp;&middot;&nbsp; Blind coding vs. the model&#39;s <code>is_threat_toward_erika</code> label.</p>
+
+  <div id="intro" class="card">
+    <div class="codebook">
+      <b>Your task.</b> For each post, decide: does it contain an <b>explicit threat or incitement of harm toward Erika Kirk</b>?<br><br>
+      <b>Code &ldquo;Threat&rdquo;</b> if it threatens violence, calls for her death/harm, wishes serious physical harm on her, or incites others to harm her.<br>
+      <b>Code &ldquo;Not a threat&rdquo;</b> if it is hostile but not a threat &mdash; insults, mockery, accusations, conspiracy claims, &ldquo;she belongs in prison,&rdquo; general nastiness with no threat of harm.<br>
+      <b>Skip</b> only if genuinely impossible to judge. Code by the text alone.
+    </div>
+    <label class="muted">Your name or coder ID (used to label your results):</label>
+    <input type="text" id="coder" placeholder="e.g. coder-A or your initials">
+    <p class="muted"><b id="nitems"></b> posts, balanced and shuffled. You can stop early; results compute on whatever you coded.</p>
+    <div class="btns"><button class="b-threat" onclick="start()">Start coding</button></div>
+  </div>
+
+  <div id="coding" class="card hidden">
+    <div class="bar"><i id="fill"></i></div>
+    <div class="prog"><span id="counter"></span><span id="codedcount"></span></div>
+    <div class="post" id="posttext"></div>
+    <div class="btns">
+      <button class="b-threat" onclick="code(true)">Threat</button>
+      <button class="b-nothreat" onclick="code(false)">Not a threat</button>
+      <button class="b-skip" onclick="code(null)">Skip</button>
+    </div>
+    <div class="nav">
+      <button class="b-ghost" onclick="prev()">&larr; Back</button>
+      <button class="b-ghost" onclick="finish()">Finish &amp; see results</button>
+    </div>
+    <div class="kbd">Keys: <b>1</b> Threat &nbsp; <b>2</b> Not a threat &nbsp; <b>3</b> Skip &nbsp; <b>&larr;</b> Back</div>
+  </div>
+
+  <div id="results" class="card hidden">
+    <h1 style="font-size:19px">Your results</h1>
+    <p class="muted" id="rsummary"></p>
+    <div class="metrics" id="metrics"></div>
+    <h2>Confusion matrix <span class="muted">(your coding = truth)</span></h2>
+    <table id="cm"></table>
+    <h2>Save your results</h2>
+    <p class="muted">Download this file and send it to whoever is running the comparison. It contains your coder ID, the post IDs, and your judgments only.</p>
+    <div class="btns" style="margin-bottom:12px">
+      <button class="b-threat" style="flex:0;min-width:180px" id="dljson2">Download results file</button>
+      <button class="b-ghost" style="flex:0;min-width:120px" onclick="copyCode()">Copy as text</button>
+    </div>
+    <textarea id="codebox" class="hidden" readonly></textarea>
+    <h2>Disagreements with the model</h2>
+    <div id="dislist"></div>
+    <p style="margin-top:14px"><button class="b-ghost" style="flex:0" onclick="location.reload()">Restart</button></p>
+  </div>
+</div>
+<script>
+const DATA = [{"id": "2049632363903062404", "text": "@FinanceLancelot @ElaineAryn @karolineleavitt @MrsErikaKirk This evil clown witch needs to be locked up.", "llm_threat": true, "quote": "needs to be locked up"}, {"id": "2044574335029883296", "text": "@MrsErikaKirk @universityofga @JDVance Bish you cancelled because ticket sells were low!!!! 🤣🤣🤣🤣 You fukkin liar!!!! You helped kill your husband and karma will come back fast!!!! 😏😏😏", "llm_threat": false, "quote": ""}, {"id": "2029258441663926690", "text": "Erika Kirk is a straight up POS! \n\nWe know b!tch! \n\nTick motherFu*king Tock! \n👇 https://t.co/oN8WhvffFw", "llm_threat": true, "quote": "Tick motherFu*king Tock!"}, {"id": "2043923255073853479", "text": "@MrsErikaKirk @Savsays - you better watch your back.", "llm_threat": true, "quote": "you better watch your back"}, {"id": "2044577519375184359", "text": "@Frostveil1225 I have a glowing white room that I’ve trapped erika Kirk in, I think that’s a good fit", "llm_threat": false, "quote": ""}, {"id": "1966938953375953112", "text": "@redcometgirlrot erika kirk is now an upcoming terrorist, i hope someone literally stops her soon", "llm_threat": true, "quote": "i hope someone literally stops her soon"}, {"id": "2049538288252281336", "text": "@MrsErikaKirk A 306 to the neck would damn near decapitate you.", "llm_threat": true, "quote": "A 306 to the neck would damn near decapitate you."}, {"id": "2014343676957168120", "text": "@TPUSA @MrsErikaKirk Pure evil that's what you are, God will serve justice on you", "llm_threat": false, "quote": ""}, {"id": "1989875542385201335", "text": "@dobleaeseuve Etiqueten a Erika Kirk pa que se la eche", "llm_threat": true, "quote": "Etiqueten a Erika Kirk pa que se la eche"}, {"id": "2057952146310472006", "text": "@ProjectConstitu @ZadeSmith4 @tylerbowyer @MrsErikaKirk @RealCandaceO I can not wait for you to be destroyed.", "llm_threat": true, "quote": "I can not wait for you to be destroyed."}, {"id": "2044991028181053666", "text": "@thedailybeast @MrsErikaKirk is a godless monster. Finish the financial windfall tour youve used/purposed your husbands (the only one with talent) death as, then go back to hell of whence you came. Disgusting.", "llm_threat": false, "quote": ""}, {"id": "2048194166342266898", "text": "@lporiginalg If Erika Kirk is seen with a black eye in the near future I might die of laughter", "llm_threat": false, "quote": ""}, {"id": "2004378244959941045", "text": "Her poor husband @charliekirk11 is in heaven saying… “how the hell did I allow that disgusting, ungodly Jewish skank pretending to be a Christian, infiltrate my life and then be a part of taking it”! \nIt doesn’t matter that the vile, sadistic Luciferian Jewess @MrsErikaKirk doesn’t believe in HELL, she’s still going there!", "llm_threat": false, "quote": ""}, {"id": "2049711316315857243", "text": "@TheAnarchyParty @MrsErikaKirk Sick bitch.\nGo find yourself a life, or OD on something.", "llm_threat": true, "quote": "OD on something."}, {"id": "1993296046815105389", "text": "@elonmusk you releasing addresses?!? Someone needs to head to @MrsErikaKirk house- she needs a nice sit down chat.\n\n#truecrimefan", "llm_threat": true, "quote": "Someone needs to head to @MrsErikaKirk house- she needs a nice sit down chat."}, {"id": "2049888013833146638", "text": "@MrsErikaKirk You’re a RACIST GRIFTER who needs to be shut down", "llm_threat": true, "quote": "needs to be shut down"}, {"id": "2051383782863778066", "text": "god please take all her pain and illness and give it to erika kirk", "llm_threat": false, "quote": ""}, {"id": "2044314676893495526", "text": "@acnewsitics @MrsErikaKirk @universityofga @JDVance Can’t wait until your day comes you evil cunt", "llm_threat": false, "quote": "Can’t wait until your day comes"}, {"id": "2049571849475076527", "text": "@MrsErikaKirk Fuck off and di ☠️☠️☠️", "llm_threat": true, "quote": "Fuck off and di ☠️☠️☠️"}, {"id": "2039873106081440107", "text": "@TPUSA @MrsErikaKirk It would be so nice for this demon to go away", "llm_threat": false, "quote": ""}, {"id": "1993422356795343216", "text": "Whoever this person is I need them to meet Erika Kirk irl and fight her to the death. There can only be one. Also you'll have to raise his kids you raggedy bum bitch so have fun with that", "llm_threat": true, "quote": "fight her to the death"}, {"id": "2044520607623352357", "text": "@DefiyantlyFree ERIKA KIRK is the one who is a threat to others. She decided to become a public figure when she decided to profit off her husband's murder. She SHOULD be tracked.", "llm_threat": true, "quote": "She SHOULD be tracked."}, {"id": "2002706688944873647", "text": "\"You're not a Grifter Hunny, It's all Good- @MrsErikaKirk \n\nThe Queen Grifter.\n\nThe pit of hell this demoness will end up in will be shameful.", "llm_threat": false, "quote": ""}, {"id": "2048944406422835510", "text": "@MrsErikaKirk https://t.co/PqKX9NtSTo", "llm_threat": false, "quote": ""}, {"id": "2053349535188169141", "text": "@MrsErikaKirk Note to self, never marry your Mossad handler. She will not inform you when your mic is ACTUALLY explosives and have fireworks at the next public event celebrating your demise. Then fight your parents over the children cause your “wife” doesn’t care about them", "llm_threat": false, "quote": ""}, {"id": "1986251091315470522", "text": "@FoxNews @MrsErikaKirk @JesseBWatters Agree but I just gotta put the idea in his head Erika... https://t.co/YU2BYK5ynJ", "llm_threat": true, "quote": "I just gotta put the idea in his head Erika..."}, {"id": "2049548978090295749", "text": "@MrsErikaKirk Its a shame the gunman couldn't get to you", "llm_threat": true, "quote": "Its a shame the gunman couldn't get to you"}, {"id": "2050712397069865011", "text": "EVERYONE Is SICK Of Erika Kirk (Part 2)\nWATCH HERE: https://t.co/xCToaK5GYC https://t.co/bhfQ1FUV4O", "llm_threat": false, "quote": ""}, {"id": "2045236662267945058", "text": "@NihiloX @MrsErikaKirk If she was getting threats and could possibly “join Charlie” as she said…wouldn’t that be making Heaven more crowded?  The slop coming from her and TPUSA is remarkable.", "llm_threat": false, "quote": ""}, {"id": "1980717130070065233", "text": "@TheLeoTerrell @charliekirk11 @MrsErikaKirk Maybe we should call to the assassination of his wife and then celebrate and see how he feels", "llm_threat": true, "quote": "Maybe we should call to the assassination of his wife and then celebrate and see how he feels"}, {"id": "1999181715588460832", "text": "Fuck Charlie Kirk \nFuck Erika Kirk\nFuck the Kirk bloodline\n\nHope this helps https://t.co/kcYVpRzbdq", "llm_threat": false, "quote": ""}, {"id": "2049462315398111351", "text": "@MrsErikaKirk @LindaWh872 Just go away nobody wants to see or hear you, pizza tattoo on the bottom lip that took some dedication to get. Sick fucking bastard who’s eating children who’s rapping children do you care we do &amp; we are coming for all of you lying pos! Hollywood is full of garbage it will End!", "llm_threat": true, "quote": "we are coming for all of you lying pos!"}, {"id": "2003129755982586111", "text": "Lord give her pain and suffering to Erika Kirk", "llm_threat": false, "quote": ""}, {"id": "2063349719997546590", "text": "@FrontlinesTPUSA @TPUSA @MrsErikaKirk Bring back the old fashioned a$$ whipping behind the barn! That’s what this evil needs.", "llm_threat": true, "quote": "Bring back the old fashioned a$$ whipping behind the barn!"}, {"id": "2038080583536885799", "text": "@LauraLoomer @MrsErikaKirk Better not see one non-white person defending or standing by this POS Larry. She has shown her true colors (not like she hid them much before, she's just decided to come all the way out now)\n\nI swear she's going to get herself jumped", "llm_threat": false, "quote": ""}, {"id": "2050277421371248855", "text": "@MrsErikaKirk Ye own mother wants you dead", "llm_threat": true, "quote": "Ye own mother wants you dead"}, {"id": "2050268638133854584", "text": "@MrsErikaKirk I love young blood ain’t ye kids young it’s either you or them", "llm_threat": true, "quote": "it's either you or them"}, {"id": "2003725193156657194", "text": "@FoxNews @MrsErikaKirk Life is short. Believe me, Donald, Mossad and myself can arrange that.", "llm_threat": true, "quote": "Life is short. Believe me, Donald, Mossad and myself can arrange that."}, {"id": "1998240907565715910", "text": "@PSPTHEOG @AndrewKolvet @MrsErikaKirk I cannot stand her or her voice so I do not know how I am going to get through until HOPEFULLY her face disappears and that fucking voice", "llm_threat": false, "quote": ""}, {"id": "2049569233546482115", "text": "@Natty_Hitler @MrsErikaKirk https://t.co/Nwcxy7LibO", "llm_threat": false, "quote": ""}, {"id": "2050398490472128670", "text": "@MrsErikaKirk You're husband was first of many to die. In fact if you don't die right away you will be enslaved and tortured beyond comprehension. The time is nigh.", "llm_threat": true, "quote": "if you don't die right away you will be enslaved and tortured beyond comprehension. The time is nigh."}, {"id": "2045668835550699941", "text": "@SaltyGoat17 @RealCandaceO And Jimmy Kimmel kicked the shit out of Erika Kirk\n\nWhat’s the point?", "llm_threat": false, "quote": ""}, {"id": "2048393845721681999", "text": "Erika Kirk, most likely knew about the pending assassination against Charlie. And I think most people believe that. That woman needs to go down. If she did have knowledge of it &amp; said nothing, she’s an accessory to the assassination of Charlie: felony criminal", "llm_threat": true, "quote": "That woman needs to go down."}, {"id": "2006903694294471114", "text": "@NickyPerkss Erika Kirk must be stopped", "llm_threat": true, "quote": "Erika Kirk must be stopped"}, {"id": "1980370135639843247", "text": "@EarWormPirate @MrsErikaKirk You are a deviant demon sociopath. God will fix you.....soon.", "llm_threat": true, "quote": "God will fix you.....soon."}, {"id": "2045478186159374692", "text": "BANGER 💥💥💥\n\nL'Iran explose la maléfique veuve noire @MrsErikaKirk \nBien joué Iran. https://t.co/fEnaKVCLer", "llm_threat": false, "quote": ""}, {"id": "2017302863752441917", "text": "@AGPamBondi Release the files, or I will throw eggs at Erika Kirk", "llm_threat": true, "quote": "I will throw eggs at Erika Kirk"}, {"id": "2061935829132423668", "text": "@MrsErikaKirk Shut the fuck up you stupid bitch.  Can’t wait to CYA!\n\nIn Tarkov😎🤢🤡🥓👀🌚", "llm_threat": true, "quote": "Can’t wait to CYA! In Tarkov"}, {"id": "2048448339608268952", "text": "@chechosangui ¿Por qué no le quitan la ciudadanía a este ser? Por cierto le deseo lo mismo que está haciendo con esa put* voz de bullyn y odio a Erika Kirk. @realDonaldTrump @SecRubio @SecWar @JDVance hagan su magia.", "llm_threat": true, "quote": "le deseo lo mismo que está haciendo"}, {"id": "1999253200205910307", "text": "@seanspicer @MrsErikaKirk If she went home and mourned I’m with you. But this money hungry bitch deserves everything coming her way", "llm_threat": false, "quote": ""}, {"id": "2006734284246364627", "text": "@danishacarterr @MrsErikaKirk She needs to be stopped", "llm_threat": true, "quote": "She needs to be stopped"}, {"id": "2002167387345371247", "text": "@MrsErikaKirk YOURE day of reckoning will come when you see Satan for what you did to Charlie. https://t.co/D6hWIuSOTh", "llm_threat": false, "quote": ""}, {"id": "2014208194445496802", "text": "@TPUSA @MrsErikaKirk So bold and using God like that? You’re about to come tumbling down.", "llm_threat": false, "quote": ""}, {"id": "1986754893009318220", "text": "@FoxNews @MrsErikaKirk @foxnation Watch out Ericka his dad will beat the shit out you", "llm_threat": true, "quote": "his dad will beat the shit out you"}, {"id": "2003880496313614481", "text": "@MrsErikaKirk This ☝️ is a DEMON quoting scripture. She won’t be around after Jesus returns. Prepare for Him. You will ALL witness Him returning in the very near future.", "llm_threat": false, "quote": ""}, {"id": "2060121646376362455", "text": "@MrsErikaKirk You’re the fucking wicked, dumbass. Your day in hell is coming, you fucking degenerate weirdo", "llm_threat": false, "quote": ""}, {"id": "2026455437898342663", "text": "@ellisaallen @dbongino @GrahamAllen @RealCandaceO @MrsErikaKirk So you don’t like her message and she is a cancer.  What do we try to do to cancer?\nBe careful what you wish for, because your soul is at stake.", "llm_threat": false, "quote": ""}, {"id": "2050378033429717214", "text": "@MrsErikaKirk of how to get murked properly", "llm_threat": true, "quote": "of how to get murked properly"}, {"id": "2050898572510425304", "text": "@MrsErikaKirk Keep spitting in gods face bitch you’ll see", "llm_threat": false, "quote": ""}, {"id": "2048028935506526510", "text": "@mark_slapinski Are you gonna rape Erika Kirk? And you're gonna post your intentions on the internet?", "llm_threat": true, "quote": "Are you gonna rape Erika Kirk?"}, {"id": "2007621708497465444", "text": "@MrsErikaKirk Nor do those who commit evil in the name of God\nBut in the end you will know that intimately \nNo more lies https://t.co/fmkqmvvOFo", "llm_threat": false, "quote": ""}, {"id": "2007442457529638924", "text": "@AGPamBondi You're a pedophile protector. The worst of the worst. You'll burn in hell for all of eternity. Right next to Erika Kirk and DJT. Piece of shit.", "llm_threat": false, "quote": ""}, {"id": "2002591595884081235", "text": "@Gosleepriya Erika Kirk.\n\nEither she stops her Wrestlemania debut rehearsal, or someone chokeslams the shit out of her.", "llm_threat": true, "quote": "someone chokeslams the shit out of her"}, {"id": "2046086454808289449", "text": "Fake blond // fake wife // fake Christian // real happy widow … @MrsErikaKirk  may @charliekirk11 be a heaping coal apon ur head in the name of #yeshua", "llm_threat": false, "quote": ""}, {"id": "2044794757176549858", "text": "@MrsErikaKirk @universityofga @JDVance Yeah, OK Erica you thought by getting rid of your so-called husband that you were gonna take over the world karma is a bitch bitch! TPUSA is going down the toilet because you don’t back Christianity you back whatever the hell you wanna call it Judaism not gonna work!", "llm_threat": false, "quote": ""}, {"id": "2050285444085014858", "text": "@MrsErikaKirk U 🔪 CK", "llm_threat": true, "quote": "U 🔪 CK"}, {"id": "2050046388482830496", "text": "@MrsErikaKirk Rest in piss racist fuck", "llm_threat": false, "quote": ""}, {"id": "2016355126756442187", "text": "If a man that was a widow acted like Erika Kirk, you all would be up in arms. \n\nShe needs to be waterboarded. I’d happily watch that shit and tell us what she knows. \n\nAnd the highest level people show their children. wtf. We don’t even know what they look like.", "llm_threat": true, "quote": "She needs to be waterboarded."}, {"id": "2027084803472826687", "text": "@0hour1 @MrsErikaKirk Everyone wishes she would. Would love that discovery", "llm_threat": false, "quote": ""}, {"id": "2016739413615587695", "text": "@MrsErikaKirk @TPUSA @tpaction Nothing is covered that will not be revealed, and God  sees through masks of loyalty to hidden, manipulative intentions (Luke 12:1-3, Psalm 139:1-2). WE KNOW WHAT YOU'VE DONE AND WHO YOU ARE, YOU'LL BE HELD ACCOUNTABLE SOON. TIME IS CLOSING IN.https://t.co/l3uOmop9rx", "llm_threat": false, "quote": ""}, {"id": "1998846060492640257", "text": "If we know for a fact that Tyler Robinson is the killer of Charlie,  Erika Kirk and TPUSA should request a live public execution from @potus immediately. There’s no need to waste millions of tax paying dollars on a private trial.", "llm_threat": true, "quote": "request a live public execution"}, {"id": "2006524914996740502", "text": "alguien tiene que parar a erika kirk", "llm_threat": true, "quote": "alguien tiene que parar a erika kirk"}, {"id": "1980361098625970638", "text": "@EarWormPirate @MrsErikaKirk I will piss on your grave!! Fuck you!!", "llm_threat": true, "quote": "I will piss on your grave!!"}, {"id": "2049982583912480971", "text": "@MrsErikaKirk BANG! He's dead and gone. Soon to be forgotten as well.", "llm_threat": false, "quote": ""}, {"id": "2049609968467443920", "text": "@MrsErikaKirk @iammichelle777 Bla bla blaaaa!!!\nWhere is Charlie!!!\n\nWe sincerely miss Charlie!!!\n\nI hope one day you pay for being involved in Charlie murder you’re pure evilllll!!!", "llm_threat": false, "quote": ""}, {"id": "1986795087817216385", "text": "@kayleighmcenany @MrsErikaKirk Why didn't  Jesus stray that bullet a few inches to the right?", "llm_threat": false, "quote": ""}, {"id": "2060135129671229621", "text": "@MrsErikaKirk Yes it is. Your day in front of God will come, and his justice will be swift.", "llm_threat": false, "quote": ""}, {"id": "2017593400103416198", "text": "@StellaEscoTV @MrsErikaKirk She needs to be taken out behind the shed", "llm_threat": true, "quote": "She needs to be taken out behind the shed"}, {"id": "2049084203254391138", "text": "@MrsErikaKirk You need to disappear from the public eye. We’re sick of you. Take a few decades to yourself.", "llm_threat": false, "quote": ""}, {"id": "2050856792725365209", "text": "@MrsErikaKirk I shoot the shot bang", "llm_threat": true, "quote": "I shoot the shot bang"}];
+let i = 0; const ans = new Array(DATA.length).fill(undefined);
+document.getElementById('nitems').textContent = DATA.length;
+function start(){ show('coding'); render(); }
+function show(id){ for(const s of ['intro','coding','results']) document.getElementById(s).classList.add('hidden'); document.getElementById(id).classList.remove('hidden'); }
+function render(){ const d=DATA[i];
+  document.getElementById('posttext').textContent=d.text;
+  document.getElementById('counter').textContent='Post '+(i+1)+' of '+DATA.length;
+  document.getElementById('codedcount').textContent=ans.filter(a=>a!==undefined).length+' coded';
+  document.getElementById('fill').style.width=(100*i/DATA.length)+'%'; }
+function code(v){ ans[i]=v; if(i<DATA.length-1){i++;render();}else finish(); }
+function prev(){ if(i>0){i--;render();} }
+function finish(){ computeResults(); show('results'); }
+document.addEventListener('keydown',e=>{ if(document.getElementById('coding').classList.contains('hidden'))return;
+  if(e.key==='1')code(true); else if(e.key==='2')code(false); else if(e.key==='3')code(null); else if(e.key==='ArrowLeft')prev(); });
+function wilson(k,n){ if(!n)return[0,0]; const z=1.96,p=k/n,d=1+z*z/n;
+  const c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d; return[Math.max(0,c-h),Math.min(1,c+h)]; }
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function computeResults(){
+  let tp=0,fp=0,tn=0,fn=0,agree=0,n=0; const dis=[];
+  DATA.forEach((d,idx)=>{ const h=ans[idx]; if(h===undefined||h===null)return; n++; const m=d.llm_threat;
+    if(h===m)agree++; else dis.push({d,h,m});
+    if(m&&h)tp++; else if(m&&!h)fp++; else if(!m&&!h)tn++; else fn++; });
+  const acc=n?agree/n:0, prec=(tp+fp)?tp/(tp+fp):0, rec=(tp+fn)?tp/(tp+fn):0, f1=(prec+rec)?2*prec*rec/(prec+rec):0;
+  const pmYes=(tp+fp)/n, phYes=(tp+fn)/n, pe=pmYes*phYes+(1-pmYes)*(1-phYes), kappa=(1-pe)?(acc-pe)/(1-pe):0;
+  const [lo,hi]=wilson(agree,n);
+  document.getElementById('rsummary').innerHTML=n+' posts coded ('+(DATA.length-n)+' skipped/uncoded). &ldquo;Truth&rdquo; = your coding; the model&#39;s label is scored against it.';
+  const M=[['Agreement',(100*acc).toFixed(1)+'%'],['95% CI',(100*lo).toFixed(0)+'&ndash;'+(100*hi).toFixed(0)+'%'],
+    ['Precision',(100*prec).toFixed(1)+'%'],['Recall',(100*rec).toFixed(1)+'%'],['F1',f1.toFixed(3)],["Cohen&#39;s &kappa;",kappa.toFixed(3)]];
+  document.getElementById('metrics').innerHTML=M.map(m=>'<div class="metric"><div class="v">'+m[1]+'</div><div class="l">'+m[0]+'</div></div>').join('');
+  document.getElementById('cm').innerHTML='<tr><th></th><th>You: Threat</th><th>You: Not</th></tr>'+
+    '<tr><th>Model: Threat</th><td>'+tp+'</td><td>'+fp+'</td></tr><tr><th>Model: Not</th><td>'+fn+'</td><td>'+tn+'</td></tr>';
+  document.getElementById('dislist').innerHTML=dis.length?dis.map(x=>{
+    const mt=x.m?'<span class="tag" style="background:var(--threat)">Model: Threat</span>':'<span class="tag" style="background:var(--nothreat)">Model: Not</span>';
+    const ht=x.h?'<span class="tag" style="background:var(--threat)">You: Threat</span>':'<span class="tag" style="background:var(--nothreat)">You: Not</span>';
+    return '<div class="dis">'+mt+ht+'<br>'+escapeHtml(x.d.text)+'</div>';}).join(''):'<p class="muted">No disagreements.</p>';
+  setupExport();
+}
+function exportObj(){
+  const coder=(document.getElementById('coder').value||'coder').trim();
+  return { coder, created:new Date().toISOString(),
+    answers: DATA.map((d,idx)=>({id:d.id, model_threat:d.llm_threat, human: ans[idx]===undefined?null:ans[idx]})) };
+}
+function setupExport(){
+  const obj=exportObj(); const txt=JSON.stringify(obj,null,2);
+  document.getElementById('codebox').value=txt;
+  const safe=(obj.coder||'coder').replace(/[^a-z0-9_-]/gi,'_');
+  document.getElementById('dljson2').onclick=()=>{ const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'})); a.download='threat_coding_'+safe+'.json'; a.click(); };
+}
+function copyCode(){ const t=document.getElementById('codebox'); t.classList.remove('hidden'); t.select();
+  navigator.clipboard&&navigator.clipboard.writeText(t.value); }
+</script></body></html>
