@@ -72,8 +72,8 @@ code = page("Audit the Examples &middot; Threat Validation", '''
     <div class="codebook" id="codebook"></div>
     <label class="muted">Which label are you auditing?</label><br>
     <select id="dim">
-      <option value="elim">Violent / eliminationist toward Erika (flag_violent_or_eliminationist)</option>
       <option value="threat">Explicit threat or incitement (is_threat_toward_erika)</option>
+      <option value="elim">Violent / eliminationist toward Erika (flag_violent_or_eliminationist)</option>
     </select><br>
     <label class="muted">Your name or coder ID:</label>
     <input type="text" id="coder" placeholder="e.g. coder-A">
@@ -112,7 +112,7 @@ code = page("Audit the Examples &middot; Threat Validation", '''
   </div>
 </div>
 <script>
-let DATA=[], i=0, ans=[], DIM='elim';
+let DATA=[], i=0, ans=[], DIM='threat';
 const DEFS={
   elim:{q:'Does this post threaten, call for, wish, justify, or celebrate <b>violence against or the death of Erika Kirk</b>?',
         field:'m_elim', col:'flag_violent_or_eliminationist'},
